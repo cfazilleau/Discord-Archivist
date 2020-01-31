@@ -1,0 +1,13 @@
+{
+  "name": "archivist",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "CodaKairos",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0"
+  }
+}
