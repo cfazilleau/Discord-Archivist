@@ -1,3 +1,5 @@
+# config.json:
+
 ```json
 {
     "authorizedUserId": "YOUR_USER_ID",
