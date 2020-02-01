@@ -5,7 +5,21 @@ const settings = require(`./config.json`);
 
 const client = new Discord.Client();
 
-let saveMedias = async msg => {
+const getContent = function (url, path) {
+    return new Promise((resolve, reject) => {
+        const request = https.get(url, (response) => {
+            if (response.statusCode < 200 || response.statusCode > 299) {
+                reject(new Error('Failed to load page, status code: ' + response.statusCode));
+            }
+            response.pipe(fs.createWriteStream(path))
+                .on('finish', () => resolve())
+                .on('error', e => reject(e));
+        });
+        request.on('error', (err) => reject(err))
+    })
+};
+
+const saveMedias = async msg => {
     var lastMsg = msg.id;
     var batchSize = settings.defaultBatchSize;
     var amount = 0;
@@ -13,18 +27,21 @@ let saveMedias = async msg => {
     msg.channel.send(`saving...`);
     console.log(`saving...`);
 
+    const dir = `./saved/` + msg.channel.id + `/`
+    fs.mkdirSync(dir, { recursive: true });
+
     while (batchSize == settings.defaultBatchSize) {
         const batch = await msg.channel.fetchMessages({ limit: settings.defaultBatchSize, before: lastMsg });
         batchSize = batch.size;
         console.log(`fetched ` + batchSize + ` messages.`);
 
-        batch.forEach(element => element.attachments.forEach(attachment => {
-            const dir = `./saved/` + msg.channel.id + `/`
-            fs.mkdirSync(dir, { recursive: true });
-            const filename = element.createdTimestamp + `_` + attachment.url.split(`/`).pop();
-            https.get(attachment.url, response => response.pipe(fs.createWriteStream(dir + filename)));
-            console.log(++amount + `. saved "` + filename + `".`);
-        }));
+        for await (var element of batch.values()) {
+            for await (var attachment of element.attachments.values()) {
+                const filename = element.createdTimestamp + `_` + attachment.url.split(`/`).pop();
+                await getContent(attachment.url, dir + filename);
+                console.log(++amount + `. saved "` + filename + `".`);
+            }
+        }
 
         if (batchSize > 0)
             lastMsg = batch.last().id;
