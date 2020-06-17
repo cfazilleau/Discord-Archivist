@@ -3,7 +3,7 @@ is a small bot I made to save all the pictures sent in a discord channel.
 
 It uses the packages
 - discord.js to access to the messages.
-- https to handle the images web requests.
+- https to handle the web requests.
 - fs to save the images to a local directory.
 
 # How to use ?

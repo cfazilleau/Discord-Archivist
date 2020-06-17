@@ -7,7 +7,7 @@ const client = new Discord.Client();
 
 const getContent = function (url, path) {
     return new Promise((resolve, reject) => {
-        const request = https.get(url, (response) => {
+        const request = https.get(url, response => {
             if (response.statusCode < 200 || response.statusCode > 299) {
                 reject(new Error('Failed to load page, status code: ' + response.statusCode));
             }
@@ -15,7 +15,7 @@ const getContent = function (url, path) {
                 .on('finish', () => resolve())
                 .on('error', e => reject(e));
         });
-        request.on('error', (err) => reject(err))
+        request.on('error', e => reject(e))
     })
 };
 
@@ -34,7 +34,6 @@ const saveMedias = async msg => {
         const batch = await msg.channel.fetchMessages({ limit: settings.defaultBatchSize, before: lastMsg });
         batchSize = batch.size;
         console.log(`fetched ` + batchSize + ` messages.`);
-
         for await (var element of batch.values()) {
             for await (var attachment of element.attachments.values()) {
                 const filename = element.createdTimestamp + `_` + attachment.url.split(`/`).pop();

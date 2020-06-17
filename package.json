@@ -1,7 +1,7 @@
 {
   "name": "archivist",
   "version": "1.0.0",
-  "description": "",
+  "description": "a simple discord bot to save all the attachments on a channel",
   "main": "index.js",
   "author": "CodaKairos",
   "license": "ISC",
