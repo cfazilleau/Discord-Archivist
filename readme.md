@@ -17,6 +17,7 @@ and create a `config.json` file:
     "botToken": "YOUR_BOT_TOKEN",
     "botId": "YOUR_BOT_ID",
     "defaultBatchSize": 100,
+    "maximumFilenameLength": 150,
     "cancelOnAlreadyExists": true,
     "skipOnAlreadyExists": false
 }

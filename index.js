@@ -16,12 +16,12 @@ const getContent = function (url, path)
 			{
 				reject(new Error('Failed to load resource, status code: ' + response.statusCode));
 			}
-		
+
 			response.pipe(fs.createWriteStream(path))
 				.on('finish', () => resolve())
 				.on('error', e => reject(e));
 		});
-		
+
 		request.on('error', e => reject(e))
 	});
 };
@@ -46,14 +46,23 @@ const saveMedias = async function(msg)
 		const batch = await msg.channel.fetchMessages({ limit: settings.defaultBatchSize, before: lastMsg });
 		batchSize = batch.size;
 		console.log("fetched " + batchSize + " messages.");
-		
+
 		// Iterate on messages
 		for await (var element of batch.values())
 		{
 			// Iterate on attachments
 			for await (var attachment of element.attachments.values())
 			{
-				const filename = element.createdTimestamp + "_" + attachment.url.split("/").pop();
+
+				var filename = attachment.url.split("/").pop(); // last element of URL
+				var extension = filename.split(".").pop(); // last element of name
+
+				if (filename.length > settings.maximumFilenameLength)
+				{
+					filename = filename.substring(0, settings.maximumFilenameLength - (extension.length + 1)) + "." + extension;
+				}
+
+				filename = element.createdTimestamp + "_" + filename;
 
 				// If the content has already been saved, skip or cancel
 				if (fs.existsSync(dir + filename))
